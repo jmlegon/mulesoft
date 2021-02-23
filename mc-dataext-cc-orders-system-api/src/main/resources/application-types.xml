@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="mcde-in" format="json">
+      <types:shape format="weave" example="examples/mc-de-order-out-2.json"><![CDATA[%dw 2.0
+
+type mcde_in = {|
+  ORDER_NO: String, 
+  ORDER_TOTAL: String, 
+  CUSTOMER_NO: String, 
+  CUSTOMER_NAME: String, 
+  SHIPPING_STATUS: String, 
+  CUSTOMER_EMAIL: String, 
+  CUSTOMER_MOBILE: String
+|} {"example": "{\\\"ORDER_NO\\\":\\\"00000001\\\",\\\"ORDER_TOTAL\\\":\\\"7500.50\\\",\\\"CUSTOMER_NO\\\":\\\"C0001\\\",\\\"CUSTOMER_NAME\\\":\\\"Jean-Marc Le Gonidec\\\",\\\"SHIPPING_STATUS\\\":\\\"DELIVERED\\\",\\\"CUSTOMER_EMAIL\\\":\\\"jmlegon@icloud.com\\\",\\\"CUSTOMER_MOBILE\\\":\\\"0686731041\\\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#79edfae5-fca2-4653-8e35-0d76f2a12522">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="mcde-in"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
