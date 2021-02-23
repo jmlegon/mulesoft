@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:marketing-cloud-data-extension-cc-orders-system-api="http://www.mulesoft.org/schema/mule/marketing-cloud-data-extension-cc-orders-system-api" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/marketing-cloud-data-extension-cc-orders-system-api http://www.mulesoft.org/schema/mule/marketing-cloud-data-extension-cc-orders-system-api/current/mule-marketing-cloud-data-extension-cc-orders-system-api.xsd">
+    <http:listener-config name="trigger-mc-journey-newcc-customer-process-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="trigger-mc-journey-newcc-customer-process-api-config" api="resource::1a9d5d84-87b0-478f-80e6-a4028e83e6d9:trigger-mc-journey-newcc-customer-process-api:1.0.0:raml:zip:trigger-mc-journey-newcc-customer-process-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <configuration-properties doc:name="Configuration properties" doc:id="a8d33ebc-4f5f-4b29-8445-01aee7bf1060" file="config.yaml" />
+	<api-gateway:autodiscovery apiId="16614245" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="a10a3ebd-73b5-4042-91f3-c28df9e39c18" flowRef="trigger-mc-journey-newcc-customer-process-api-main" />
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="66db022e-0e8f-4fc8-b22f-d47e232f36e0" >
+		<http:request-connection protocol="HTTPS" host="${sfmc.subdomain}.auth.marketingcloudapis.com" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="691414c5-37a8-47d9-b2f0-8fc54e333fe1" >
+		<http:request-connection protocol="HTTPS" host="${sfmc.subdomain}.rest.marketingcloudapis.com" />
+	</http:request-config>
+	<marketing-cloud-data-extension-cc-orders-system-api:config name="Marketing_Cloud_Data_Extension_CC_Orders_System_API_Config" doc:name="Marketing Cloud Data Extension CC Orders System API Config" doc:id="a00e7e62-69a7-47ba-9431-1e11284b729c" property_host="mc-dataext-cc-orders-system-api.uk-e1.cloudhub.io" property_port="80" property_protocol="HTTP" property_responseTimeout="20000" property_basePath="/api/"/>
+	<flow name="trigger-mc-journey-newcc-customer-process-api-main">
+        <http:listener config-ref="trigger-mc-journey-newcc-customer-process-api-httpListenerConfig" path="/api/*" outputMimeType="application/json" allowedMethods="POST">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="trigger-mc-journey-newcc-customer-process-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="trigger-mc-journey-newcc-customer-process-api-console">
+        <http:listener config-ref="trigger-mc-journey-newcc-customer-process-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="trigger-mc-journey-newcc-customer-process-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="post:\:application\json:trigger-mc-journey-newcc-customer-process-api-config">
+        <set-variable value="#[payload]" doc:name="Set Variable" doc:id="3c3849ae-1e42-4cba-bdde-f434be410870" variableName="contact"/>
+		<marketing-cloud-data-extension-cc-orders-system-api:get-customer-from-email doc:name="get customer from email" doc:id="437de98a-b4cc-4852-a176-0d921c9986c7" config-ref="Marketing_Cloud_Data_Extension_CC_Orders_System_API_Config" email="#[vars.contact.CUSTOMER_EMAIL]"/>
+		<choice doc:name="Choice" doc:id="5c620e5f-cc4e-4fe4-9a01-f1750613a1c1" >
+			<when expression="#[sizeOf(payload) &gt; 0]">
+				<logger level="INFO" doc:name="Logger" doc:id="447fc614-f39c-4495-924c-c26761a961b8" message="la taille du payload est : #[sizeOf(payload)]"/>
+				<marketing-cloud-data-extension-cc-orders-system-api:create-an-order doc:name="Create an order" doc:id="5a20e5c6-6578-4e7a-97c8-e199d9c28aa6" config-ref="Marketing_Cloud_Data_Extension_CC_Orders_System_API_Config">
+					<marketing-cloud-data-extension-cc-orders-system-api:create-an-order-request-data ><![CDATA[#[vars.contact]]]></marketing-cloud-data-extension-cc-orders-system-api:create-an-order-request-data>
+				</marketing-cloud-data-extension-cc-orders-system-api:create-an-order>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Dafault_Logger" doc:id="2e4e8e91-7877-440c-a4da-f4ddb0bc48c9" message="la taille du payload est : #[sizeOf(payload)]" />
+				<flow-ref doc:name="Flow Reference" doc:id="20c64f1c-82a0-44cb-a50d-031fac8412f2" name="load-dataextension-and-trigger-journey"/>
+			</otherwise>
+		</choice>
+    </flow>
+	<flow name="load-dataextension-and-trigger-journey" doc:id="de384d76-6950-4660-ad2f-305f1a737dd4" >
+		<ee:transform doc:name="Transform Message" doc:id="506d7746-2cdc-4d8d-9cd4-2e0e1a571953">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "grant_type": "client_credentials",
+    "client_id": p('sfmc.client_id') ,
+    "client_secret": p('sfmc.client_secret'),
+    "account_id": p('sfmc.account_id')
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Get Token" doc:id="0fcd5b51-3d09-440c-a723-9cccffc8dead" config-ref="HTTP_Request_configuration" path="/v2/token">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Accept" : "*/*",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+		</http:request>
+		<set-variable value='#[payload.token_type ++ " " ++ payload.access_token as String]' doc:name="Set Variable" doc:id="b628e984-7419-4ef5-b533-30cf8b58b830" variableName="auth_token" />
+		<ee:transform doc:name="Transform Message" doc:id="e2524e74-a884-4edc-9fc5-9ae18f296f6d">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "ContactKey": vars.contact.CUSTOMER_NO,
+    "EventDefinitionKey": "APIEvent-3ec897f2-f433-c2c0-9f99-3d25254cb7ec",
+    "Data":  vars.contact
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Trigger Journey" doc:id="a7e7db58-bb2b-4d0c-b0f1-729a4c9c0d5c" config-ref="HTTP_Request_configuration1" path="/interaction/v1/events">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : vars.auth_token,
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+		</http:request>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:name="Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="8c95f9fa-0885-4404-94e7-70ab0b15e973" message="#[payload]" />
+	</flow>
+</mule>
