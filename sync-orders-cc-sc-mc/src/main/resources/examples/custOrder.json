@@ -1,0 +1,169 @@
+{
+  "_type": "order_search_hit",
+  "data": {
+    "_type": "order",
+    "adjusted_merchandize_total_tax": 39.00,
+    "adjusted_shipping_total_tax": 0.80,
+    "billing_address": {
+      "_type": "order_address",
+      "address1": "Lombard Street 5",
+      "city": "Le Chesnay",
+      "country_code": "US",
+      "first_name": "Jean-Marc",
+      "full_name": "Jean-Marc LE GONIDEC",
+      "id": "644ab08a826a95b40a74c73723",
+      "last_name": "LE GONIDEC",
+      "phone": "9686731041",
+      "postal_code": "78150",
+      "state_code": "CA"
+    },
+    "confirmation_status": "confirmed",
+    "created_by": "Customer",
+    "creation_date": "2020-10-29T20:33:30.000Z",
+    "currency": "USD",
+    "customer_info": {
+      "_type": "customer_info",
+      "customer_id": "adVR80IPF9egbWGHXUN2OFNga3",
+      "customer_name": "J-Marc LE GONIDEC",
+      "customer_no": "00000001",
+      "email": "jmlegon@free.fr"
+    },
+    "customer_name": "J-Marc LE GONIDEC",
+    "export_status": "ready",
+    "last_modified": "2020-10-29T20:33:30.000Z",
+    "merchandize_total_tax": 39.00,
+    "notes": {
+      "_type": "simple_link",
+      "link": "https://bbsv-076.sandbox.us01.dx.commercecloud.salesforce.com/s/RefArch/dw/shop/v20_4/orders/00001102/notes"
+    },
+    "order_no": "00001102",
+    "order_token": "L9Nt4iDxS23pJGfnypstUFCkYn5hqOc6HO9dXzIm8Mw",
+    "order_total": 835.76,
+    "payment_instruments": [
+      {
+        "_type": "order_payment_instrument",
+        "amount": 835.76,
+        "payment_card": {
+          "_type": "payment_card",
+          "card_type": "Visa",
+          "credit_card_expired": false,
+          "credit_card_token": "undefined",
+          "expiration_month": 2,
+          "expiration_year": 2022,
+          "holder": "Jean-Marc LE GONIDEC",
+          "masked_number": "************1111",
+          "number_last_digits": "1111"
+        },
+        "payment_instrument_id": "a637503a5eec099a6ccefa558b",
+        "payment_method_id": "CREDIT_CARD"
+      }
+    ],
+    "payment_status": "not_paid",
+    "product_items": [
+      {
+        "_type": "product_item",
+        "adjusted_tax": 30.00,
+        "base_price": 299.99,
+        "bonus_product_line_item": false,
+        "gift": false,
+        "item_id": "ca61e2e82dc8b289c34299d526",
+        "item_text": "Navy Single Pleat Wool Suit",
+        "price": 599.98,
+        "price_after_item_discount": 599.98,
+        "price_after_order_discount": 599.98,
+        "product_id": "750518548241M",
+        "product_name": "Navy Single Pleat Wool Suit",
+        "quantity": 2,
+        "shipment_id": "me",
+        "tax": 30.00,
+        "tax_basis": 599.98,
+        "tax_class_id": "standard",
+        "tax_rate": 0.05
+      },
+      {
+        "_type": "product_item",
+        "adjusted_tax": 9.00,
+        "base_price": 179.99,
+        "bonus_product_line_item": false,
+        "gift": false,
+        "item_id": "a5631844e4c3a27e412a36ec30",
+        "item_text": "Sony Walkman® 5GB Digital Media Player",
+        "price": 179.99,
+        "price_after_item_discount": 179.99,
+        "price_after_order_discount": 179.99,
+        "product_id": "sony-nwz-s616fM",
+        "product_name": "Sony Walkman® 5GB Digital Media Player",
+        "quantity": 1,
+        "shipment_id": "me",
+        "tax": 9.00,
+        "tax_basis": 179.99,
+        "tax_class_id": "standard",
+        "tax_rate": 0.05
+      }
+    ],
+    "product_sub_total": 779.97,
+    "product_total": 779.97,
+    "shipments": [
+      {
+        "_type": "shipment",
+        "adjusted_merchandize_total_tax": 39.00,
+        "adjusted_shipping_total_tax": 0.80,
+        "gift": false,
+        "merchandize_total_tax": 39.00,
+        "product_sub_total": 779.97,
+        "product_total": 779.97,
+        "shipment_id": "me",
+        "shipment_no": "00005002",
+        "shipment_total": 835.76,
+        "shipping_address": {
+          "_type": "order_address",
+          "address1": "Lombard Street 5",
+          "city": "Le Chesnay",
+          "country_code": "US",
+          "first_name": "Jean-Marc",
+          "full_name": "Jean-Marc LE GONIDEC",
+          "id": "44a8f4ef3b13ca427d89a0e9f9",
+          "last_name": "LE GONIDEC",
+          "phone": "9686731041",
+          "postal_code": "78150",
+          "state_code": "CA"
+        },
+        "shipping_method": {
+          "_type": "shipping_method",
+          "description": "Order received within 7-10 business days",
+          "id": "001",
+          "name": "Ground",
+          "c_estimatedArrivalTime": "7-10 Business Days"
+        },
+        "shipping_status": "not_shipped",
+        "shipping_total": 15.99,
+        "shipping_total_tax": 0.80,
+        "tax_total": 39.80
+      }
+    ],
+    "shipping_items": [
+      {
+        "_type": "shipping_item",
+        "adjusted_tax": 0.80,
+        "base_price": 15.99,
+        "item_id": "062cbb887a3bb52c9894a1436e",
+        "item_text": "Shipping",
+        "price": 15.99,
+        "price_after_item_discount": 15.99,
+        "shipment_id": "me",
+        "tax": 0.80,
+        "tax_basis": 15.99,
+        "tax_class_id": "standard",
+        "tax_rate": 0.05
+      }
+    ],
+    "shipping_status": "not_shipped",
+    "shipping_total": 15.99,
+    "shipping_total_tax": 0.80,
+    "site_id": "RefArch",
+    "status": "new",
+    "taxation": "net",
+    "tax_total": 39.80
+  },
+  "relevance": 0.0
+}

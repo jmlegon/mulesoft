@@ -1,0 +1,19 @@
+{
+  "query": {
+    "filtered_query": {
+      "query": {
+        "match_all_query": {}
+      },
+      "filter": {
+        "term_filter": {
+          "field": "order_no",
+          "operator": "greater",
+          "values": [
+            "00000001"
+          ]
+        }
+      }
+    }
+  },
+  "select": "(**)"
+}

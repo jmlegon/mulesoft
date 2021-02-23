@@ -1,0 +1,110 @@
+pipeline {
+  agent {
+    /*
+     * Run on any agent with the label 'mule-builder'.  It
+     * happens to be a docker container...
+     */
+    label 'mule-builder'
+  }
+  options {
+    // Don't keep more than 5 sets of build logs
+    buildDiscarder(logRotator(numToKeepStr:'5'))
+    // If the pipeline hasn't completed in 30 minutes, we have a problem
+    timeout(time: 30, unit: 'MINUTES')
+  }
+  environment { //Global Environments
+    DEPLOY_CREDS = credentials('deploy-anypoint-user') //Deployer user
+    DEVELOPER_EMAIL = "nochum.klein@mulesoft.com"
+    MULE_VERSION = '4.1.5'
+    BG = "Public"
+    WORKER = "Small"
+    //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
+    IMAGE = readMavenPom().getArtifactId()
+    VERSION = readMavenPom().getVersion()
+  }
+  stages {
+    stage('Prepare') {//Copy the configuration file according to the environment
+      steps {
+        configFileProvider([configFile(fileId: "${BRANCH_NAME}-commerce-cloud-order-polling-app.yaml", replaceTokens: true, targetLocation: './src/main/resources/config/configuration.yaml')]) {
+            //Use this for https configuration
+            //withCredentials([file(credentialsId: 'self-signed-keystore.jks', variable: 'KEYSTORE_FILE')]){
+                sh 'echo "Branch NAME: $BRANCH_NAME"'
+            //}
+        }
+      }
+    }
+    stage('Build') {//Build the package
+      steps {
+        sh 'mvn -B clean package -DskipTests'
+      }
+    }
+
+    stage('Test') { //Run Unit Tests
+      steps {
+        sh 'echo "Testing complete..."'
+       }
+       post {
+         unstable {
+           mail to:"$DEVELOPER_EMAIL",
+               subject:"${currentBuild.fullDisplayName} test failures",
+               body:"Application $IMAGE version $VERSION at ${env.BUILD_URL} has test failures."
+         }
+       }
+    }
+
+    stage('Deploy Development') {//Deploy to development
+      when {
+        branch 'develop'
+      }
+      environment {
+        ENVIRONMENT = 'Development'
+        ANYPOINT_ENV = credentials('DEV_ANYPOINT_MANUFACTURING')
+        APP_NAME = 'dev-commerce-cloud-order-polling-app'
+      }
+      steps {
+        sh 'mvn -V -B -DskipTests deploy -DmuleDeploy -Dmule.version=$MULE_VERSION -Danypoint.username=$DEPLOY_CREDS_USR -Danypoint.password=$DEPLOY_CREDS_PSW -Dcloudhub.app=$APP_NAME -Dcloudhub.environment=$ENVIRONMENT -Denv.ANYPOINT_CLIENT_ID=$ANYPOINT_ENV_USR -Denv.ANYPOINT_CLIENT_SECRET=$ANYPOINT_ENV_PSW -Dcloudhub.bg=$BG -Dcloudhub.worker=$WORKER'
+      }
+      post {
+        success {
+          mail to:"$DEVELOPER_EMAIL",
+              subject:"${currentBuild.fullDisplayName} Maven build to DEV succeeded",
+              body:"Build of $IMAGE version $VERSION at ${env.BUILD_URL} succeeded."
+        }
+        failure {
+          mail to:"$DEVELOPER_EMAIL",
+              subject:"${currentBuild.fullDisplayName} Maven build to DEV build failure!",
+              body:"Build of $IMAGE version $VERSION at ${env.BUILD_URL} failed."
+        }
+      }
+    }
+    stage('Deploy Production') {//Deploy to Production
+        when {
+          branch 'master'
+        }
+        environment {
+          ENVIRONMENT = 'Production'
+          ANYPOINT_ENV = credentials('PRD_ANYPOINT_MANUFACTURING')
+          APP_NAME = 'commerce-cloud-order-polling-app'
+        }
+        steps {
+          sh 'mvn -V -B -DskipTests deploy -DmuleDeploy -Dmule.version=$MULE_VERSION -Danypoint.username=$DEPLOY_CREDS_USR -Danypoint.password=$DEPLOY_CREDS_PSW -Dcloudhub.app=$APP_NAME -Dcloudhub.environment=$ENVIRONMENT -Denv.ANYPOINT_CLIENT_ID=$ANYPOINT_ENV_USR -Denv.ANYPOINT_CLIENT_SECRET=$ANYPOINT_ENV_PSW -Dcloudhub.bg=$BG -Dcloudhub.worker=$WORKER'
+        }
+        post {
+          success {
+            mail to:"$DEVELOPER_EMAIL",
+                subject:"${currentBuild.fullDisplayName} Maven build to PROD succeeded",
+                body:"Build of $IMAGE version $VERSION at ${env.BUILD_URL} succeeded."
+          }
+          failure {
+            mail to:"$DEVELOPER_EMAIL",
+                subject:"${currentBuild.fullDisplayName} Maven build to PROD build failure!",
+                body:"Build of $IMAGE version $VERSION at ${env.BUILD_URL} failed."
+          }
+        }
+    }
+  }
+
+  tools {// Select Tools to use
+    maven 'M3'
+  }
+}

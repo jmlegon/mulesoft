@@ -1,0 +1,29 @@
+bizmgr:
+#  nochums environment
+#  host: "nklein-inside-na07-dw.demandware.net"
+#  nto environment
+  host: "bbsv-153.sandbox.us01.dx.commercecloud.salesforce.com"
+#  nochums environment
+  site: "RefArch"
+#  nto environment
+#  site: "NTO-SFRA"
+  user: "admin"
+#  nochums environment
+#  pass: "0Tk^%nD*X2!s"
+#  nto environment
+  pass: "ebb2@Js&s2qd"
+  poll-frequency: "10"
+  poll-delay: "15"
+oauth:
+  client_id: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  client_secret: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  poll-frequency: "830"
+  poll-delay: "0"
+connected-app:
+  client-id: "3MVG9KsVczVNcM8xNCl1kR_0IVc3ApBhEnZkp584dMjZ5qpNTvdVUBx5_RDhb_u8Ggpa55yQpi3rO5t2hzCAe"
+  client-secret: "1355464249353792096"
+sfdc:
+  user: "nklein@mulesdo.demo"
+  password: "!Credential5"
+  sectoken: "70IeB13VLphiwz5VHvnpkTJd"
+  

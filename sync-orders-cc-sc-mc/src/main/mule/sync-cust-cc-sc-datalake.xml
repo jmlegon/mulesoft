@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:triggerthe-mc-journeywelcomenew-c-ccustomer-process-api="http://www.mulesoft.org/schema/mule/triggerthe-mc-journeywelcomenew-c-ccustomer-process-api" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:azure-storage="http://www.mulesoft.org/schema/mule/azure-storage"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:sf-b2c="http://www.mulesoft.org/schema/mule/sf-b2c" xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:salesforce-composite="http://www.mulesoft.org/schema/mule/salesforce-composite" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/salesforce-composite http://www.mulesoft.org/schema/mule/salesforce-composite/current/mule-salesforce-composite.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/sf-b2c http://www.mulesoft.org/schema/mule/sf-b2c/current/mule-sf-b2c.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/azure-storage http://www.mulesoft.org/schema/mule/azure-storage/current/mule-azure-storage.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/triggerthe-mc-journeywelcomenew-c-ccustomer-process-api http://www.mulesoft.org/schema/mule/triggerthe-mc-journeywelcomenew-c-ccustomer-process-api/current/mule-triggerthe-mc-journeywelcomenew-c-ccustomer-process-api.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="0baee7ac-e191-4d87-9f37-2b2d2254f3bf" >
+		<http:request-connection host="bbsv-153.sandbox.us01.dx.commercecloud.salesforce.com" protocol="HTTPS"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="269a1624-cff7-4591-bdf9-14091ba0d589" >
+		<http:request-connection protocol="HTTPS" host="account.demandware.com" />
+	</http:request-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="3c4cab03-5f28-4de8-9b03-c0eee5a7d7d8" >
+		<db:my-sql-connection host="ehc1u4pmphj917qf.cbetxkdyhwsb.us-east-1.rds.amazonaws.com" port="3306" user="iwsmicyqjyxjg0i7" password="ryp3blw3n1qnkrb8" database="b9whifpmmd06abib" />
+	</db:config>
+	<validation:config name="Validation_Config" doc:name="Validation Config" doc:id="bcd51f52-7ab3-4c6b-b16b-df860dade681" />
+	<triggerthe-mc-journeywelcomenew-c-ccustomer-process-api:config name="Trigger_the_MC_Journey_welcome_new_CC_customer_Process_API_Config" doc:name="Trigger the MC Journey welcome new CC customer Process API Config" doc:id="57eb52cc-f50f-4614-9118-74ca6ef9fe52" property_host="mc-trigger-journey-newcc-cust-process-api.uk-e1.cloudhub.io" property_port="80" property_protocol="HTTP" property_basePath="/api/" property_responseTimeout="20000" />
+	<file:config name="File_Config" doc:name="File Config" doc:id="467c42fc-3a93-4519-8f49-5414c9c35e14" />
+	<azure-storage:config name="Azure_Storage_Config" doc:name="Azure Storage Config" doc:id="b8fa7058-a1d4-41f9-b887-4b107da86b7c" >
+		<azure-storage:access-key-config-connection accountName="jmlgstorage" accountKey="DefaultEndpointsProtocol=https;AccountName=jmlgstorage;AccountKey=uf58ZIOO4CQLFcox8SkugcjJ8vIgnNOEU3GawTWobEn5a/7OOZ6Y7pbxIzTR4Hmi6m2jLWbLbALNfv2zwhVzfA==;EndpointSuffix=core.windows.net" />
+	</azure-storage:config>
+	<flow name="commerce-cloud-order-polling-appFlow" doc:id="065b9ee5-46ea-44de-b803-b5410680991f" >
+		<scheduler doc:name="Scheduler" doc:id="cd8cd54e-7fe0-4211-a689-15c76b3fe6e9" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="${bizmgr.poll-frequency}" startDelay="${bizmgr.poll-delay}" timeUnit="SECONDS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<os:retrieve doc:name="Retrieve Run State" doc:id="3c22e8f5-16c2-48fb-bcf3-c279490b391e" key="alreadyRunning" objectStore="Object_store">
+			<os:default-value ><![CDATA[#[false]]]></os:default-value>
+		</os:retrieve>
+		<choice doc:name="Is Another Instance Running?" doc:id="27892ac6-3b7e-4c07-b91a-e87fe7c93e46" >
+			<when expression="#[payload == false]">
+				<flow-ref doc:name="Commerce Cloud Flow" doc:id="754a56f3-ba90-4d47-8ff7-3c632ad34eb5" name="commerce-cloud-order-polling-appCommerceCloudFlow"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="e9148c33-8b68-4542-8ba7-da6b348e9f22" message="Another instance of this process is already running.  Duplication avoided..."/>
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-continue enableNotifications="false" logException="false" doc:name="On Error Continue" doc:id="ba244e00-2a48-4c00-aba4-877bf429e59b" >
+				<os:store doc:name="Clear Run State" doc:id="36298322-95d8-40fe-a710-ac1151ed62b7" key="alreadyRunning" objectStore="Object_store">
+					<os:value ><![CDATA[#[false]]]></os:value>
+				</os:store>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="commerce-cloud-order-polling-appCommerceCloudFlow" doc:id="2c98176b-eb20-4fbe-a73c-82f012a306ec">
+		<os:store doc:name="Set Run State" doc:id="7a5d6406-1484-46a9-a81c-2a9741aabb8e" key="alreadyRunning" objectStore="Object_store">
+			<os:value ><![CDATA[#[true]]]></os:value>
+		</os:store>
+		<os:retrieve doc:name="Retrieve Last Order Number" doc:id="99e4acfd-f4d4-4b00-b26a-c1dc6db0fd4a" key="lastOrderNo" target="lastOrderNo" objectStore="Object_store">
+			<os:default-value ><![CDATA[#["00000000" as String]]]></os:default-value>
+		</os:retrieve>
+		<logger level="INFO" doc:name="Logger" doc:id="adae6700-fc5e-4731-afce-13631a07cdf9" message="Last order number retrieved: #[vars.lastOrderNo]"/>
+		<os:retrieve doc:name="Retrieve Auth Token" doc:id="60b1c578-a67c-48e1-b724-1663bb818f2e" key="accessToken" target="accessToken"/>
+		<ee:transform doc:name="Format Query" doc:id="ef40df00-54de-4740-b607-ef7b14864a6a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+var lastOrderNo = vars.lastOrderNo as Number
+var nextOrderNo = (lastOrderNo + 1 as Number) as String {format: "00000000"}
+---
+"{
+  \"query\": {
+    \"filtered_query\": {
+      \"query\": {
+        \"match_all_query\": {}
+      },
+      \"filter\": {
+        \"range_filter\": {
+          \"field\": \"order_no\",
+          \"from\": \"$nextOrderNo\",
+          \"to\": \"00999999\"
+        }
+      }
+    }
+  },
+  \"select\": \"(**)\",
+  \"sorts\": [
+    {
+      \"field\": \"last_modified\",
+      \"sort_order\": \"asc\"
+    }]
+}
+"]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="query" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "query": {
+    "filtered_query": {
+      "query": {
+        "match_all_query": {}
+      },
+      "filter": {
+        "term_filter": {
+          "field": "order_no",
+          "operator": "greater",
+          "values": [
+            vars.lastOrder
+          ]
+        }
+      }
+    }
+  },
+  "select": "(**)"
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="8d945f3b-a63f-4cee-be49-fc8a9cd23d60" message="JUSTE AVANT D'APPELER COMMERCE CLOUD #[payload]"/>
+		<http:request method="POST" doc:name="Query CC Biz Mgr" doc:id="b6e53ef6-92d1-459f-b8c7-4d8676198e17" config-ref="HTTP_Request_configuration" path="/s/RefArch/dw/shop/v20_4/order_search?client_id=${oauth.client_id}" sendBodyMode="ALWAYS">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer " ++ vars.accessToken,
+	"Accept" : "application/json",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+		</http:request>
+		<set-variable value="#[payload.total]" doc:name="Set Variable" doc:id="bceb622f-ac3a-4552-a4d7-274336b6a7f1" variableName="OrderNb"/>
+		<choice doc:name="New Orders Since Last Run?" doc:id="f8b89671-9799-4ffc-bf56-1f93a52ef134" >
+			<when expression="#[payload.count &gt; 0]">
+				<foreach doc:name="For Each Order" doc:id="48cda6ef-eb93-48a4-b8b1-79bc22541d53" collection="#[payload.hits]" counterVariableName="iCont">
+					<scatter-gather doc:name="Scatter-Gather" doc:id="3c4fbf1f-0588-4c4f-bd87-6c4d9d68fce9" >
+						<route >
+							<flow-ref doc:name="Load the orders into the Data Lake" doc:id="4de9dc48-081c-4f56-9a0a-bdea7f9a250a" name="stage-orders-mysql" />
+						</route>
+						<route >
+							<flow-ref doc:name="Synchronize the Customer with Salesforce" doc:id="2c9cf76b-fc09-4279-a22b-a3d8f43b75eb" name="sync-customer-CC-SF"/>
+						</route>
+						<route >
+							<flow-ref doc:name="load-MC-DE-Trigger-Journey" doc:id="afe35351-6f18-4169-80e4-393795baabe4" name="load-MC-Data-Extension"/>
+						</route>
+					</scatter-gather>
+		</foreach>
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger" doc:id="a63dd73c-72ef-40e7-bf8c-4bf7c83682df" message="No more Orders to process"/>
+			</otherwise>
+		</choice>
+		<os:store doc:name="Clear Run State" doc:id="9d6ce9aa-02b0-479e-ae1e-fa0a8f5c2a8c" key="alreadyRunning" objectStore="Object_store">
+			<os:value ><![CDATA[#[false]]]></os:value>
+		</os:store>
+	</flow>
+	<flow name="stage-orders-mysql" doc:id="532412ae-2bb0-4425-82cf-d7b943177db9" >
+		<ee:transform doc:name="Transform Message" doc:id="d513224c-601a-43bd-a651-0079883396db" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="myOrders" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="908e3b4d-e85a-410c-a775-b4f239f75e6a" message='#[vars.myOrders]'/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="2fa8bbd8-8765-4db9-bda4-48ed0456687d">
+						<route>
+							<db:insert doc:name="Insert Orders into Data Lake" doc:id="ed540b4a-91c9-4fb3-98fc-54289a5a5452" config-ref="Database_Config">
+						<db:sql>insert into Orders (order_no, order_total, customer_no, customer_name, customer_email)  values (:order_no, :order_total, :customer_no, :customer_name, :customer_email)</db:sql>
+						<db:input-parameters><![CDATA[#[{
+	"order_no" : payload.data.order_no,
+	"order_total" : payload.data.order_total,
+	"customer_no" : payload.data.customer_info.customer_no,
+	"customer_name" : payload.data.customer_info.customer_name,
+	"customer_email" : payload.data.customer_info.email
+}]]]></db:input-parameters>
+					</db:insert>
+				<os:store doc:name="Store LastOrderNo" doc:id="91b26387-e1d6-4750-85ca-e984b343fcb3" key="lastOrderNo" objectStore="Object_store">
+					<os:value><![CDATA[#[vars.myOrders.data.order_no]]]></os:value>
+				</os:store>
+						</route>
+						<route>
+							<foreach doc:name="For Each" doc:id="3a1310a9-82e9-4218-b362-db9d50128610" collection="#[payload.data.product_items]" counterVariableName="vCount">
+								<db:insert doc:name="Insert Products into Data Lake" doc:id="91b1d6e1-318b-4e17-9d46-e3da9dc383fa" config-ref="Database_Config">
+						<db:sql>insert into Order_Lines (order_no, product_id, product_name, quantity, base_price) values (:order_no, :product_id, :product_name, :quantity, :base_price)</db:sql>
+						<db:input-parameters><![CDATA[#[{
+	"order_no" : vars.myOrders.data.order_no,
+	"product_id" : payload.product_id,
+	"product_name" : payload.product_name,
+	"quantity" : payload.quantity,
+	"base_price" : payload.base_price
+}]]]></db:input-parameters>
+					</db:insert>
+							</foreach>
+						</route>
+					</scatter-gather>
+	</flow>
+	<flow name="load-MC-Data-Extension" doc:id="a7b2a59d-2f13-4043-92c2-b6e97bee46ad" >
+		<ee:transform doc:name="Transform Message" doc:id="3b11d85c-0ade-4525-8288-c359fb3dd034" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+
+	ORDER_NO: payload.data.order_no,
+	ORDER_TOTAL: payload.data.order_total as String,
+	CUSTOMER_NAME: payload.data.customer_info.customer_name,
+	CUSTOMER_NO: payload.data.customer_info.customer_no,
+	SHIPPING_STATUS: "DELIVERED",
+	CUSTOMER_EMAIL: payload.data.customer_info.email,
+	CUSTOMER_MOBILE: payload.data.billing_address.phone
+
+}
+  ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<triggerthe-mc-journeywelcomenew-c-ccustomer-process-api:triggerjourney doc:name="TriggerJourney" doc:id="0b930cce-af45-4cdd-b036-32ae7c9ff284" config-ref="Trigger_the_MC_Journey_welcome_new_CC_customer_Process_API_Config">
+			<triggerthe-mc-journeywelcomenew-c-ccustomer-process-api:triggerjourney-request-data ><![CDATA[#[%dw 2.0
+output application/json
+---
+payload]]]></triggerthe-mc-journeywelcomenew-c-ccustomer-process-api:triggerjourney-request-data>
+		</triggerthe-mc-journeywelcomenew-c-ccustomer-process-api:triggerjourney>
+	</flow>
+	<flow name="publish-cc-transactions-to-azure-storage" doc:id="feb5517a-bb4b-4a61-a861-f14c20514e21" >
+		<ee:transform doc:name="Transform Message" doc:id="d68e3804-df97-44de-8f97-0008f39c1b7b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+
+	ORDER_NO: payload.data.order_no,
+	ORDER_TOTAL: payload.data.order_total as String,
+	CUSTOMER_NAME: payload.data.customer_info.customer_name,
+	CUSTOMER_NO: payload.data.customer_info.customer_no,
+	SHIPPING_STATUS: "DELIVERED",
+	CUSTOMER_EMAIL: payload.data.customer_info.email,
+	CUSTOMER_MOBILE: payload.data.billing_address.phone
+
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="filename" ><![CDATA[%dw 2.0
+output text/plain
+---
+"order-" ++ now() as String{format:"yyyyMMdd-HHmmss"} ++ ".json" ]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<file:write doc:name="Generate JSON Files" doc:id="89aa313a-9b20-4dd4-a9cb-83672b27e161" config-ref="File_Config" path='#["/Users/jlegonidec/Mulesoft/Demo/Demo-MS-Azure-Storage/" ++ vars.filename]'/>
+		<azure-storage:upload-file-in-directory doc:name="Upload file in directory" doc:id="f1843fe2-55a2-4b5b-9918-ac8bd7bb41f1" config-ref="Azure_Storage_Config">
+			<azure-storage:file-name directoryName="myfirstdirectory" fileName="#[vars.filename]" path='#["/Users/jlegonidec/Mulesoft/Demo/Demo-MS-Azure-Storage/" ++ vars.filename]' shareName="jmlg"/>
+		</azure-storage:upload-file-in-directory>
+		<choice doc:name="Choice" doc:id="d05b4481-0e50-4fc5-80d7-41015912ec29" >
+			<when expression="payload == true">
+				<ee:transform doc:name="Transform Message" doc:id="8411148c-c0f6-4db0-9499-00f3ba33c361" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message" : "File Uploaded into Azure Datalake"
+	
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+		</choice>
+	</flow>
+	<flow name="sync-customer-CC-SF" doc:id="8107e8cb-b720-4b07-b47c-37dc4bfc38b3" >
+		<ee:transform doc:name="Transform Message" doc:id="21cf1715-915a-43be-ae1b-00dd3bb34508" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="myCustID" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<salesforce:query doc:name="Check whether the customer exists in SF" doc:id="231faa0b-0f08-4359-87de-abb5396215cb" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[select CC_CustID__c from Account where CC_CustID__c = ':Id']]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	Id : payload.data.customer_info.customer_no
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<choice doc:name="Choice" doc:id="6b12fb7e-2404-4942-be40-24a70c2eac56" >
+			<when expression="payload.CC_CustID__c == null">
+				<set-payload value="#[vars.myCustID]" doc:name="Set Payload" doc:id="bba70f4a-708b-4bd9-aac7-451f3940d691" />
+				<ee:transform doc:name="Transform Message" doc:id="dc0daafe-5113-4910-91e9-97dec32403f0">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[{
+	Name: payload.data.billing_address.full_name,
+	CC_CustID__c: payload.data.customer_info.customer_no,
+	BillingStreet: payload.data.billing_address.address1,
+	BillingPostalCode: payload.data.billing_address.postal_code,
+	BillingCity: payload.data.billing_address.city,
+	BillingCountry: payload.data.billing_address.country_code
+}]]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<ee:transform doc:name="Transform Message" doc:id="2ae415c1-59dc-48b7-accc-660810e2f9ab">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload map (items, index) -> {
+	
+	Name : items.Name,
+	CC_CustID__c : items.CC_CustID__c, 
+	BillingStreet : items.BillingStreet,
+	BillingPostalCode : items.BillingPostalCode,
+	BillingCity : items.BillingCity
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="00f84704-97de-4a95-a38a-fef0010f3847" message='#[payload]'/>
+				<salesforce:create doc:name="Create Account" doc:id="d7167e2f-1df1-45a6-b32a-b9fd637b4e38" config-ref="Salesforce_Config" type="Account"/>
+				<ee:transform doc:name="Transform Message" doc:id="dc84d655-46a5-4649-b30e-b445635435b9" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+		</choice>
+	</flow>
+	<flow name="commerce-cloud-order-polling-appGetAuthToken" doc:id="e16a191f-2c05-4480-b137-8d85a94d3857" >
+		<scheduler doc:name="Scheduler" doc:id="b2895543-dbd3-4252-90b5-0fc6fabf0d9c" >
+			<scheduling-strategy >
+				<fixed-frequency timeUnit="SECONDS" frequency="${oauth.poll-frequency}" startDelay="${oauth.poll-delay}"/>
+			</scheduling-strategy>
+		</scheduler>
+		<ee:transform doc:name="Build Auth Header" doc:id="b62d4d36-92be-44a3-bf94-b55303077459" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="authHeader" ><![CDATA[%dw 2.0
+output application/java
+import toBase64 from dw::core::Binaries
+var bmUserName = Mule::p('bizmgr.user') as String
+var bmUserPassword = Mule::p('bizmgr.pass') as String
+var clientPassword = Mule::p('oauth.client_secret') as String
+var plainText = bmUserName ++ ":" ++ bmUserPassword ++ ":" ++ clientPassword as String
+var binRequest = plainText as Binary
+---
+toBase64(binRequest)]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request Auth Token" doc:id="7fc85cea-57b5-441d-804a-8cf30fde3bd4" config-ref="HTTP_Biz_Mgr_Request_Configuration" path="/dwsso/oauth2/access_token?grant_type=client_credentials">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Basic YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhOmFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYQ==",
+	"Accept" : "application/json",
+	"Content-Type" : "application/x-www-form-urlencoded"
+}]]]></http:headers>
+		</http:request>
+		<os:store doc:name="Store Auth Token" doc:id="a1ef0666-fe47-4004-92ca-50d7c2bca282" key="accessToken">
+			<os:value ><![CDATA[#[payload.access_token]]]></os:value>
+		</os:store>
+		<logger level="DEBUG" doc:name="Log Success" doc:id="98ecadde-5903-4b1b-8335-74c2c6045b6e" message="Access token retrieved successfully"/>
+	</flow>
+</mule>

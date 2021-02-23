@@ -1,0 +1,22 @@
+{
+	"productResults": [
+		{
+			"ccProductId": "1",
+			"sfdcProductId": "01txxx1"
+		},
+		{
+			"ccProductId": "2",
+			"sfdcProductId": "01txxx2"
+		}
+	],
+	"pricebookResults": [
+		{
+			"ccProductId": "3",
+			"sfdcPricebookEntryId": "01txxx3"
+		},
+		{
+			"ccProductId": "4",
+			"sfdcPricebookEntryId": "01txxx4"
+		}
+	]
+}
